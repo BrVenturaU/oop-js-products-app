@@ -1,3 +1,5 @@
+import ProductService from "../services/ProductService.js";
+
 class ProductUI{
     addProduct(product){
         const productList = document.getElementById("product-list");
@@ -16,9 +18,15 @@ class ProductUI{
         productList.appendChild(element);
     }
 
-    removeProduct(element){
+    removeProduct(element, elementCollection){
         if(element.name ===  'delete-product'){
-            element.parentElement.parentElement.parentElement.remove();
+            const elementToRemove = element.parentElement.parentElement.parentElement;
+            const indexOfElement = elementCollection.indexOf(elementToRemove);
+            let products = ProductService.getProducts();
+            products.splice(indexOfElement, 1);
+            ProductService.storeAfterDelete(products);
+            elementToRemove.remove();
+            this.showMessage("Product removed successfully.", "alert-success");
         }
             
     }

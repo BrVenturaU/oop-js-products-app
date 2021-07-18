@@ -1,5 +1,6 @@
 'use-strict'
 import Product from './models/Product.js';
+import ProductService from './services/ProductService.js';
 import ProductUI from './UI/ProductUI.js';
 
 const ready = (onDocumentReadyCallback) => {
@@ -14,13 +15,15 @@ ready(() =>{
     const priceInput = document.getElementById("price");
     const yearInput = document.getElementById("year");
 
+    const storedProducts = ProductService.getProducts();
+    storedProducts.forEach(p => ProductUI.addProduct(p));
 
     priceInput.addEventListener("keyup", (e) => {
         if(isNaN(parseFloat(priceInput.value))){
             priceInput.value = "";
             ProductUI.showValidateInputMessage("price", "The price must be a number or decimal.")
         }
-    })
+    });
 
     form.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -43,12 +46,14 @@ ready(() =>{
         }
         const product = new Product(name, price, year);
         ProductUI.addProduct(product);
+        ProductService.storeProduct(product);
         ProductUI.showMessage("Product added successfully.", "alert-info");
         form.reset();
     });
 
     productList.addEventListener('click', (e) =>{
-        ProductUI.removeProduct(e.target);
-        ProductUI.showMessage("Product removed successfully.", "alert-success");
+        let elements = Array.from(productList.children);
+        ProductUI.removeProduct(e.target, elements);
+        
     });
 })
